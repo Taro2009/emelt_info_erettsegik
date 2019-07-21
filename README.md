@@ -1,0 +1,1 @@
+Emelt szintű informatika érettségik programozási feladatai pythonban

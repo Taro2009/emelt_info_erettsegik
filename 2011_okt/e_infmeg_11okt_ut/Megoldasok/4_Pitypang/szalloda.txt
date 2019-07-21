@@ -1,0 +1,153 @@
+﻿'A megoldás Visual Basic 2008-ban készült
+
+Module Szalloda
+    Structure Foglalas_Tipus
+        Dim Sorszam As Integer
+        Dim Nev As String
+        Dim Szobaszam As Integer
+        Dim Bejelentkezes_Nap As Integer
+        Dim Kijelentkezes_Nap As Integer
+        Dim VendegekSzama As Integer
+        Dim Reggeli As Integer
+        Dim Tartozkodas As Integer
+    End Structure
+    Dim Foglalas As New List(Of Foglalas_Tipus)
+    Dim HonapHatarok() = {0, 1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
+    Sub Main()
+        Feladat1() 'Beolvasás
+        Feladat2() 'Leghosszab tartózkodás
+        Feladat3() 'Árbevétel
+        Feladat4() 'Havi vendégéjek
+        Feladat5() 'Szabad szobák száma
+        Console.ReadKey()
+    End Sub
+    Sub Feladat1()
+        Dim f As New System.IO.StreamReader("pitypang.txt")
+        f.ReadLine()
+        Do Until f.EndOfStream
+            Dim sor = f.ReadLine
+            Dim Reszek() = sor.Split(" ")
+            Dim UjFoglalas As Foglalas_Tipus
+            With UjFoglalas
+                .Sorszam = Reszek(0)
+                .Szobaszam = Reszek(1)
+                .Bejelentkezes_Nap = Reszek(2)
+                .Kijelentkezes_Nap = Reszek(3)
+                .VendegekSzama = Reszek(4)
+                .Reggeli = Reszek(5)
+                .Nev = Reszek(6)
+                .Tartozkodas = .Kijelentkezes_Nap - .Bejelentkezes_Nap
+            End With
+            Foglalas.Add(UjFoglalas)
+        Loop
+        f.Close()
+    End Sub
+    Sub Feladat2()
+        Dim LeghosszabbTartozkodasFoglalas As Foglalas_Tipus
+        Dim LeghosszabbTartozkodas As Integer = 0
+        Dim AktFoglalas As Foglalas_Tipus
+        For Each AktFoglalas In Foglalas
+            With AktFoglalas
+                If .Tartozkodas >= LeghosszabbTartozkodas Then
+                    LeghosszabbTartozkodasFoglalas = AktFoglalas
+                    LeghosszabbTartozkodas = .Tartozkodas
+                End If
+            End With
+        Next
+        Console.WriteLine("2. feladat")
+        Console.WriteLine("A leghosszabb tartózkodás:")
+        With LeghosszabbTartozkodasFoglalas
+            Console.WriteLine("{0} ({1}) - {2}", .Nev, .Bejelentkezes_Nap, LeghosszabbTartozkodas)
+        End With
+    End Sub
+    Sub Feladat3()
+        Dim TeljesEvesArbevetel As Integer
+        Dim f As New System.IO.StreamWriter("bevetel.txt")
+        For Each AktFoglalas As Foglalas_Tipus In Foglalas
+            With AktFoglalas
+                Dim Szamla As Integer = SzamlaOsszege(AktFoglalas)
+                TeljesEvesArbevetel += Szamla
+                f.WriteLine("{0}:{1}", .Sorszam, Szamla)
+            End With
+        Next
+        f.Close()
+        Console.WriteLine("4. feladat")
+        Console.WriteLine("A teljes éves árbevétel: {0} Ft", TeljesEvesArbevetel)
+    End Sub
+    Sub Feladat4()
+        Dim AktFoglalas As Foglalas_Tipus
+        Dim Honapok(12) As Integer
+        'Vendégéjek összesítése hónaponként
+        For Each AktFoglalas In Foglalas
+            Dim honapszam As Integer = 1
+            With AktFoglalas
+                For i As Integer = .Bejelentkezes_Nap To .Kijelentkezes_Nap - 1
+                    For j As Integer = 1 To 12
+                        If i >= HonapHatarok(j) And _
+                            i < HonapHatarok(j + 1) Then
+                            Honapok(j) += AktFoglalas.VendegekSzama
+                            Exit For
+                        End If
+                    Next
+                Next
+            End With
+        Next
+        'Az eredmény kiíratása
+        Console.WriteLine("3. feladat")
+        Console.WriteLine("A havi vendégéjek száma:")
+        For i As Integer = 1 To 12
+            Console.WriteLine("{0}: {1} vendégéj", i, Honapok(i))
+        Next
+    End Sub
+    Sub Feladat5()
+        Dim UjFoglalas As Foglalas_Tipus
+        Dim Szobak(27) As Integer
+        Console.WriteLine("5. feladat")
+        'Az új foglalás bekérése
+        With UjFoglalas
+            Console.WriteLine("Kérem adja meg az új foglalás kezdőnapjának sorszámát!")
+            UjFoglalas.Bejelentkezes_Nap = Console.ReadLine
+            Console.WriteLine("Kérem adja meg az éjszakák számát!")
+            .Tartozkodas = Console.ReadLine
+            .Kijelentkezes_Nap = .Bejelentkezes_Nap + .Tartozkodas
+        End With
+        'Szabad szobák számának kalkulációja
+        Dim Szabadszobakszama = 27
+        For Each AktFoglalas As Foglalas_Tipus In Foglalas
+            With AktFoglalas
+                'Ha van átfedés az időszakok között, akkor foglaltnak jelöli az adott szobát
+                If (.Bejelentkezes_Nap < UjFoglalas.Kijelentkezes_Nap And _
+                        UjFoglalas.Bejelentkezes_Nap < .Kijelentkezes_Nap) Then
+                    Szobak(.Szobaszam) = 1
+                End If
+            End With
+        Next
+        For i As Integer = 1 To 27
+            Szabadszobakszama -= Szobak(i)
+        Next
+        'Az eredmény kiíratása
+        If Szabadszobakszama = 0 Then
+            Console.WriteLine("Nincs szabad szoba.")
+        Else
+            Console.WriteLine("A foglalásnak megfelelő szabad szobák száma: {0}", Szabadszobakszama)
+        End If
+    End Sub
+    Function SzamlaOsszege(ByVal F As Foglalas_Tipus) As Integer
+        Dim SzobaAr, Osszeg As Integer
+        With F
+            Select Case .Bejelentkezes_Nap
+                Case 1 To 120
+                    SzobaAr = 9000
+                Case 121 To 243
+                    SzobaAr = 10000
+                Case 244 To 365
+                    SzobaAr = 8000
+            End Select
+            Osszeg = .Tartozkodas * (SzobaAr + .Reggeli * .VendegekSzama * 1100)
+            If .VendegekSzama = 3 Then
+                Osszeg += .Tartozkodas * 2000
+            End If
+            Return Osszeg
+        End With
+    End Function
+ End Module

@@ -1,0 +1,4 @@
+3
+1 11 30 35 3 1 Szabo_Nandor
+2 11 40 45 2 0 Bodi_Katalin
+3 12 40 45 2 1 Agoston_Gyula

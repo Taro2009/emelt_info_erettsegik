@@ -71,3 +71,49 @@ print('Ekkor összesen', eves_hianyzas, 'óra hiányzás történt.')
 
 ################################################# 7. feladat #######################################################################
 
+# 2 listát csinálunk, az egyikben a nevek a másikban azonos indexen a hiányzások.
+# A 2. listában kell egy maximumkeresés, majd átfutunk rajta még1x, és ha
+# a maxszal egyenlő elemet találunk kivesszük hozzá a nevet és beleappendeljük
+# egy új maxhianyzas listába
+
+
+nevek = []
+hianyzasok_nevszerint = []
+nevlista = []
+index = 0
+napihianyzasszam = 0
+for sor in belista:
+    if sor[0] != '#':
+        
+        nevlista.append(sor[0]) # csinálunk egy ideiglenes listát amibe beletesszük a vezeték és keresztnevet, majd ezt joinolva tesszük a végleges név listába
+        nevlista.append(sor[1])
+        if ' '.join(nevlista) in nevek:
+            index = nevek.index(' '.join(nevlista))    # ha már benne van a név a listában akkor megkeressük az indexét és növeljük a neki megfelelő indexű hiányzásszámlálót
+            for i in range(0, 7):
+                if sor[2][i] == 'I' or sor[2][i] == 'X':
+                    napihianyzasszam += 1
+            hianyzasok_nevszerint[index] += napihianyzasszam
+        else:
+            nevek.append(' '.join(nevlista))
+            for i in range(0, 7):
+                if sor[2][i] == 'I' or sor[2][i] == 'X':
+                    napihianyzasszam += 1
+            hianyzasok_nevszerint.append(napihianyzasszam)
+        napihianyzasszam = 0  
+        nevlista = []
+# print(nevek) #csak teszthez
+# print(hianyzasok_nevszerint) # csak teszthez
+
+max_hiany = max(hianyzasok_nevszerint)
+max_hiany_nev = []
+
+for i in range(0, (len(hianyzasok_nevszerint))):
+    if hianyzasok_nevszerint[i] == max_hiany:
+        max_hiany_nev.append(nevek[i])
+
+print('7. feladat')
+print('A legtöbbet hiányzó tanulók: ', end='')
+for elem in max_hiany_nev:
+    print(elem, end=' ')
+
+

@@ -1,3 +1,4 @@
+# Nehézség (könnyebb / nehezebb): KONNYEBB
 # tesztverseny
 
 befile = open('./e_inffor_17maj_fl/Forrasok/4_Tesztverseny/valaszok.txt')

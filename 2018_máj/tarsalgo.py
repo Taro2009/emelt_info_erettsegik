@@ -1,3 +1,4 @@
+# Nehézség (könnyebb / nehezebb): NEHEZEBB
 '''
 Színház társalgója, 9 és 15 óra közötti időszak.
 ajto.txt-ben 4 adat található, első 2 az ajtón való áthaladás időpontja óra és

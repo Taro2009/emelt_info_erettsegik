@@ -1,3 +1,4 @@
+# Nehézség (könnyebb / nehezebb): NEHEZEBB
 '''
 A kerites.txt a forrás, A telkek vannak benne a vásárlás sorrendjében. Minden sorban 3 db adat található.
 Az első: megmondja, hogy a telek páros (0) vagy páratlan (1) oldalán van az utcának. A második: a telek szélessége méterben (8 és 20 közötti int)

@@ -1,4 +1,4 @@
-
+# Nehézség (könnyebb / nehezebb): KONNYEBB
 def hetnapja(honap, nap):
     honap = int(honap)
     nap = int(nap)

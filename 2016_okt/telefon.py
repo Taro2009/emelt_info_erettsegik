@@ -1,4 +1,23 @@
 # Nehézség (könnyebb / nehezebb): NEHEZEBB
+
+def vanevarakozo(lista, idopont):
+    i = 0
+    for elem in lista:
+        if mpbe(idopont[3], idopont[4], idopont[5]) - mpbe(elem[0], elem[1], elem[2]) > 0 and mpbe(elem[3], elem[4], elem[5]) - mpbe(idopont[3], idopont[4], idopont[5]) > 0:
+            i += 1
+            return [elem, i]
+        i += 1
+    return 0
+
+def legkorabbi_kovetkezo(lista, idopont):
+    i = 0
+    for elem in lista:
+        if mpbe(elem[0], elem[1], elem[2]) - mpbe(idopont[3], idopont[4], idopont[5]) > 0:
+            i += 1
+            return [elem, i]
+        i += 1
+    return 0
+
 ################################################# 1. feladat #######################################################################
 def mpbe(ora, perc, masodperc):
     return (int(masodperc) + 60*int(perc) + 3600*int(ora))
@@ -107,7 +126,9 @@ else:
 # először megnézzük, van-e olyan hívó aki a nyitás előtt hívott, de a nyitás utánig várt. Ha van, akkor ezekből a
 # legkorábban kezdettet kell kezdő hívónak választani.
 # ha nincs ilyen, akkor a nyitás utáni első hívó az első hívó
-# ha megvan az első hívó, megnézzük, hogy van-e olyan, aki a befejezése utánig tartotta a telefont, és ha van, akkor
+
+# ha megvan az első hívó, megnézzük, hogy van-e olyan, aki a beszélgetése alatt hívott ÉS
+# a befejezése utánig tartotta a telefont, és ha van, akkor
 # ezekből vesszük a legkorábban kezdő hívót, ha nincs, akkor vesszük a befejezése utáni legkorábbi hívót.
 # ezt ismételjük.
 
@@ -119,3 +140,50 @@ else:
 
 # az egész egy while(amig a végére nem érünk) ciklusba lesz téve.
 # meg is van minden ami a sikeres futáshoz kell
+
+elsohivo = 0
+i = 0
+for elem in belista:
+    if (mpbe(8, 0, 0) - mpbe(elem[0], elem[1], elem[2])) > 0 and (mpbe(elem[3], elem[4], elem[5]) - mpbe(8, 0, 0)) > 0:
+        elsohivo = elem
+        i += 1
+        break
+    i += 1
+
+if not elsohivo:
+    i = 0
+    for elem in belista:
+        if mpbe(elem[0], elem[1], elem[2]) - mpbe(8, 0, 0) >= 0:
+            elsohivo = elem
+            i += 1
+            break
+        i += 1
+
+kifile = open('sikeres.txt', 'w')
+print(i+1, elsohivo[0], elsohivo[1], elsohivo[2], elsohivo[3], elsohivo[4], elsohivo[5], file=kifile)
+
+
+vanemeg = True
+aktualis_hivo = elsohivo
+kovetkezo_hivo = None
+
+while vanemeg:
+    kovetkezo_hivo = vanevarakozo(belista, aktualis_hivo)        
+
+    if not kovetkezo_hivo:
+        kovetkezo_hivo = legkorabbi_kovetkezo(belista, aktualis_hivo)
+
+    if kovetkezo_hivo == 0:
+        vanemeg = False
+    else:
+        if mpbe(12, 0, 0) - mpbe(kovetkezo_hivo[0][0], kovetkezo_hivo[0][1], kovetkezo_hivo[0][2]) > 0:
+            print(kovetkezo_hivo[1], aktualis_hivo[3], aktualis_hivo[4], aktualis_hivo[5], kovetkezo_hivo[0][3], kovetkezo_hivo[0][4], kovetkezo_hivo[0][5], file=kifile)
+            # print(kovetkezo_hivo[1], kovetkezo_hivo[0][0], kovetkezo_hivo[0][1], kovetkezo_hivo[0][2], kovetkezo_hivo[0][3], kovetkezo_hivo[0][4], kovetkezo_hivo[0][5], file=kifile) # teszteléshez kiírja a tényleges tárcsázás és a telefon letevésének időpontjait
+        aktualis_hivo = kovetkezo_hivo[0]
+
+
+
+
+
+kifile.close()
+
